@@ -21,3 +21,14 @@
 **Link to work:** 
 [Polynomial computation) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/polynomial.py)
 
+
+### Day 2: May 20, 2019
+##### To Learn Python 3 By Coding Practice
+
+**Today's Progress**: n-grams and try to check spell correction based on just n-grams(kinda failure with various reasons in mind)
+
+**Thoughts:** Just coding n-grams after reading Speech and Language Processing Third Edition draft Daniel Jurafsky Stanford University.  What I learn is how to use http client as well as data structures in collections.
+
+**Link to work:** 
+[N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/n-grams.py)
+
