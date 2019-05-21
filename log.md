@@ -32,3 +32,14 @@
 **Link to work:** 
 [N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/n-grams.py)
 
+
+### Day 3: May 21, 2019
+##### To Learn Python 3 By Coding Practice
+
+**Today's Progress**: Write in-place rotation of square matrix.
+
+**Thoughts:** I was kinda lazy today so just did an algorithm practice.  What I learned is to do enum in Python as well as // floor_div operator.
+
+**Link to work:** 
+[N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/matrix.py)
+
