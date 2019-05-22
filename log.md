@@ -43,3 +43,14 @@
 **Link to work:** 
 [N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/matrix.py)
 
+
+### Day 4: May 22, 2019
+##### To Learn Python 3 By Coding Practice
+
+**Today's Progress**: Write a simple calculator 
+
+**Thoughts:** I did this one because of what I'd done with Java in my workplace just flashed into my brain.  I just wanna like those in python but only managed to do just basic calcuator within approximately one hour.
+
+**Link to work:** 
+[N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/calculator.py)
+
