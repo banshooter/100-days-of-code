@@ -54,3 +54,13 @@
 **Link to work:** 
 [N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/calculator.py)
 
+
+### Day 5: May 23, 2019
+##### To Learn Python 3 By Coding Practice
+
+**Today's Progress**: N-queens
+
+**Thoughts:** I spent almost all of my free time today watching computer class video.  I should practice coding so I come up with doing a stupid brute-force n-queens problem.
+
+**Link to work:** 
+[N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/queens.py)
