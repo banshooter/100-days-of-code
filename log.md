@@ -64,3 +64,14 @@
 
 **Link to work:** 
 [N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/queens.py)
+
+
+### Day 6: May 24, 2019
+##### To Learn Python 3 By Coding Practice
+
+**Today's Progress**: Brute-force Sudoku
+
+**Thoughts:** This just flashes into my mind.  I might learn something new in Python by solving this problem.  Today I learned variable scope in Python that you can assign variable out side function only if it's declared as global, so for function inside function this kind of assignment cannot be used.
+
+**Link to work:** 
+[N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/sudoku.py)
