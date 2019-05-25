@@ -71,7 +71,18 @@
 
 **Today's Progress**: Brute-force Sudoku
 
-**Thoughts:** This just flashes into my mind.  I might learn something new in Python by solving this problem.  Today I learned variable scope in Python that you can assign variable out side function only if it's declared as global, so for function inside function this kind of assignment cannot be used.
+**Thoughts:** This just flashes into my mind.  I might learn something new in Python by solving this problem.  Today I learned variable scope in Python that you can assign variable declared outside function only if it's declared as global, so for function inside function this kind of assignment cannot be used.
 
 **Link to work:** 
 [N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/sudoku.py)
+
+
+### Day 7: May 25, 2019
+##### To Learn Python 3 By Coding Practice
+
+**Today's Progress**: Write a python code to immitate what in the http://www.buildyourownlisp.com book. (to be continued)
+
+**Thoughts:** It's Saturday but I managed to have time to read a good online book I'd like to read but haven't done so until now.  The reason I haven't read it because I think compiler is a subject that is just good to know but it's rarely been applicable at work.
+
+**Link to work:** 
+[N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
