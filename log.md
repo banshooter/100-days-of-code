@@ -86,3 +86,14 @@
 
 **Link to work:** 
 [N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
+
+
+### Day 8: May 25, 2019
+##### To Learn Python 3 By Coding Practice
+
+**Today's Progress**: Write a python code to immitate what in the http://www.buildyourownlisp.com book finished chapter 7. (to be continued)
+
+**Thoughts:** Completed what started yesterday and learn how to handle and exception in pyton in the process.
+
+**Link to work:** 
+[N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
