@@ -41,7 +41,7 @@
 **Thoughts:** I was kinda lazy today so just did an algorithm practice.  What I learned is to do enum in Python as well as // floor_div operator.
 
 **Link to work:** 
-[N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/matrix.py)
+[Algorithm) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/matrix.py)
 
 
 ### Day 4: May 22, 2019
@@ -52,7 +52,7 @@
 **Thoughts:** I did this one because of what I'd done with Java in my workplace just flashed into my brain.  I just wanna like those in python but only managed to do just basic calcuator within approximately one hour.
 
 **Link to work:** 
-[N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/calculator.py)
+[Calculator) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/calculator.py)
 
 
 ### Day 5: May 23, 2019
@@ -63,7 +63,7 @@
 **Thoughts:** I spent almost all of my free time today watching computer class video.  I should practice coding so I come up with doing a stupid brute-force n-queens problem.
 
 **Link to work:** 
-[N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/queens.py)
+[Chess) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/queens.py)
 
 
 ### Day 6: May 24, 2019
@@ -74,7 +74,7 @@
 **Thoughts:** This just flashes into my mind.  I might learn something new in Python by solving this problem.  Today I learned variable scope in Python that you can assign variable declared outside function only if it's declared as global, so for function inside function this kind of assignment cannot be used.
 
 **Link to work:** 
-[N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/sudoku.py)
+[Sudoku) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/sudoku.py)
 
 
 ### Day 7: May 25, 2019
@@ -85,10 +85,10 @@
 **Thoughts:** It's Saturday but I managed to have time to read a good online book I'd like to read but haven't done so until now.  The reason I haven't read it because I think compiler is a subject that is just good to know but it's rarely been applicable at work.
 
 **Link to work:** 
-[N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
+[buildyourownlisp) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
 
 
-### Day 8: May 25, 2019
+### Day 8: May 26, 2019
 ##### To Learn Python 3 By Coding Practice
 
 **Today's Progress**: Write a python code to immitate what in the http://www.buildyourownlisp.com book finished chapter 7. (to be continued)
@@ -96,4 +96,15 @@
 **Thoughts:** Completed what started yesterday and learn how to handle and exception in pyton in the process.
 
 **Link to work:** 
-[N-Grams) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
+[buildyourownlisp) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
+
+
+### Day 9: May 27, 2019
+##### To Learn Python 3 By Coding Practice
+
+**Today's Progress**: Write a python code to immitate what in the http://www.buildyourownlisp.com book finished chapter 9. (to be continued)
+
+**Thoughts:** Not much thought besides it would be easier if I change the way to tokenize this custom lisp syntax by split it with whitespace, but I will stick to the way I did.
+
+**Link to work:** 
+[buildyourownlisp) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
