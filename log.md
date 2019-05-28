@@ -108,3 +108,14 @@
 
 **Link to work:** 
 [buildyourownlisp) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
+
+
+### Day 10: May 28, 2019
+##### To Learn Python 3 By Coding Practice
+
+**Today's Progress**: Write a python code to immitate what in the http://www.buildyourownlisp.com book finished chapter 10. (to be continued)
+
+**Thoughts:** I should do more unit testing.
+
+**Link to work:** 
+[buildyourownlisp) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
