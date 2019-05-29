@@ -2,6 +2,7 @@
 import sys
 import operator
 import functools
+from inspect import signature
 
 class Number:
     def __init__(self, repr):
@@ -12,14 +13,48 @@ class Number:
     def eval(self, env):
         return self.value
 
-def evalOpt(x):
+def evalOpt(x, env):
     if isinstance(x, list):
         if callable(x[0]):
-            return x[0](x[1:])
+            paramLen = len(signature(x[0]).parameters)
+            if paramLen == 0:
+                x[0]()
+            elif paramLen == 1:
+                if len(x) == 1:
+                    return x[0]
+                else:
+                    return x[0](x[1:])
+            else:
+                return evalOpt(x[1], env)
         else:
             return x[0]
     elif callable(x):
         return x()
+    else:
+        return x
+
+def define(vars, value, env):
+    if isinstance(vars, Symbol):
+        env[vars.repr] = list(map(lambda x: eval(x,env), value))
+    elif isinstance(vars, QExpression):
+        for i in range(len(vars.repr)):
+            env[vars.repr[i].repr] = eval(value[i],env)
+
+def eval(x, env):
+    if isinstance(x, list):
+        if x[0].repr == 'def':
+            return define(x[1], x[2:], env)
+        else:
+            evaledX = list(map(lambda elem: eval(elem,env), x))
+            return evalOpt(evaledX, env)
+    elif isinstance(x, Symbol):
+        return x.eval(env)
+    elif isinstance(x, Number):
+        return x.eval(env)
+    elif isinstance(x, Expression):
+        return x.eval(env)
+    elif isinstance(x, QExpression):
+        return x.eval(env)
     else:
         return x
 
@@ -28,37 +63,53 @@ BuiltinOpts = {
     '-': lambda x: functools.reduce(lambda a,b: a-b, x),
     '*': lambda x: functools.reduce(lambda a,b: a*b, x),
     '/': lambda x: functools.reduce(lambda a,b: a/b, x),
+    '%': lambda x: functools.reduce(lambda a,b: a%b, x),
     'head': lambda x: x[0][0:1],
     'tail': lambda x: x[0][1:],
     'join': lambda x: functools.reduce(lambda a,b: a+b, x),
     'list': lambda x: x,
-    'eval': lambda x: evalOpt(x[0]),
+    'init': lambda x: x[0][0:-1],
+    'len': lambda x: len(x[0]),
+    'cons': lambda x: functools.reduce(lambda a,b: a+b, x[::-1]),
+    'exit': lambda: exit()
 }
-class Operator:
+class Symbol:
     def __init__(self, repr):
         self.repr = repr
     def __str__(self):
-        return 'Operator('+self.repr+')'
+        return 'Symbol('+self.repr+')'
+    def __eq__(self, another):
+        return self.__dict__ == another.__dict__
     def eval(self, env):
-        return BuiltinOpts[self.repr]
+        if self.repr == 'eval':
+            return evalOpt
+        if self.repr in BuiltinOpts:
+            return BuiltinOpts[self.repr]
+        elif self.repr in env:
+            return env[self.repr]
+        else:
+            raise Exception('Error: unbound symbol!')
 
 class Expression:    
-    def __init__(self, exprs):
-        self.exprs = exprs
+    def __init__(self, repr):
+        self.repr = repr
     def eval(self, env):
-        if len(self.exprs) == 0:
+        if len(self.repr) == 0:
             return None
-        opt = self.exprs[0].eval(env)
-        if len(self.exprs) == 1:
-            return opt
-        evaledExprs = list(map(lambda x: x.eval(env), self.exprs[1:]))
-        return opt(evaledExprs)
+        return eval(self.repr, env)
 
 class QExpression:    
-    def __init__(self, exprs):
-        self.exprs = exprs
+    def __init__(self, repr):
+        self.repr = repr
+    def __str__(self):
+        if len(self.repr) == 0:
+            return '{}'
+        else:
+            return '{' + ' '.join(map(lambda x: str(x), self.repr)) + '}'
+    def __eq__(self, another):
+        return self.__dict__ == another.__dict__
     def eval(self, env):
-        return list(map(lambda x: x.eval(env), self.exprs))
+        return list(map(lambda x: x.eval(env), self.repr))
 
 WhiteSpace = {' ', '\t'}
 def skipWS(s, cursor):
@@ -77,15 +128,16 @@ def isAlphabet(c):
 def isAlphaNumeric(c):
     return isNumeric(c) or isAlphabet(c)
 
-def operator(s, cursor):
+def symbol(s, cursor):
     cursor = skipWS(s, cursor)
     if cursor < len(s) and s[cursor] in BuiltinOpts:
-        return (Operator(s[cursor]), cursor+1)
+        return (Symbol(s[cursor]), cursor+1)
     if isAlphabet(s[cursor]):
         start = cursor
-        while isAlphaNumeric(s[cursor]):
+        while cursor < len(s) and isAlphaNumeric(s[cursor]):
             cursor = cursor+1
-        return (Operator(s[start:cursor]), cursor)
+        symbolString = s[start:cursor]
+        return (Symbol(symbolString), cursor)
     else:
         return (None, cursor)
 
@@ -115,11 +167,6 @@ def number(s, cursor):
     else:
         return (Number(s[start:cursor]), cursor)
 
-"""
-    sexpr  : '(' <expr>* ')' ;               \
-    expr   : <number> | <symbol> | <sexpr> ; \
-    lispy  : /^/ <expr>* /$/ ;               \
-"""
 def expressionWithParan(s, cursor, constructor, openParen, closeParen):
     cursor = skipWS(s, cursor)
     if s[cursor] == openParen:
@@ -158,7 +205,7 @@ def expression(s, cursor=0):
     if expr:
         return (expr, skipWS(s, cursor))
 
-    (expr, cursor) = operator(s, cursor)
+    (expr, cursor) = symbol(s, cursor)
     if expr:
         return (expr, skipWS(s, cursor))
     if cursor < len(s):
@@ -179,45 +226,34 @@ def lisp(s):
             break
     if cursor < len(s):
         raise Exception('It\'s expected to end but it isn\'t at ', cursor)
-    if len(exprs) > 0 and isinstance(exprs[0], Operator):
-        return Expression(exprs)
-    elif len(exprs) == 1:
-        return exprs[0]
-    else:
-        return exprs
+    return exprs
 
 
 commandMap = {
     'quit': lambda:exit()
 }
-def eval(cmd):
+def execute(cmd, env):
     if len(cmd) == 0:
         return None
-
-    if cmd[0] == ':':
-        if cmd[1:] in commandMap:
-            commandMap[cmd[1:]]()
-    else:
-        try:
-            exprs = lisp(cmd)
-            if exprs:
-                for expr in exprs:
-                    result = expr.eval({})
-                    if result:
-                        return result
-        except Exception as err:
-            return err
+    try:
+        result = eval(lisp(cmd), env)
+        if result:
+            return result
+    except Exception as err:
+        return err
     return None
 
 def repl():
+    env = {}
     while True:
-        result = eval(input("lisp>").rstrip())
+        result = execute(input("lisp>").rstrip(), env)
         if result:
             print(result)
 
 def unit_tests():
+    env = {}
     def test(s, expected):
-        result = lisp(s).eval({})
+        result = eval(lisp(s), env)
         if result != expected:
             print("actual ", result)
         assert expected == result
@@ -232,9 +268,25 @@ def unit_tests():
     test('tail { 1 2 3 }', [2,3])
     test('join { 1 2 3 } { 4 }', [1,2,3,4])
     test('list 1 2 3 ', [1,2,3])
+    test('len { 0 1 2 3 4}', 5)
+    test('cons { 1 2 3 } { 4 }', [4,1,2,3])
+    test('init { 0 1 2 3 4}', [0,1,2,3])
     test('eval {head (list 1 2 3 4)}', [1])
     test('eval (tail { tail tail { 5 6 7 } })', [6,7])
     test('eval (head {(+ 1 2) (+ 10 20)})', 3)
+    test('(eval (head {+ - + - * /})) 10 20', 30)
+    test('def { x } 100', None)
+    test('def { y } 200', None)
+    test('x', 100)
+    test('y', 200)
+    test('+ x y', 300)
+    test('def {a b} 10 20', None)
+    test('+ a b', 30)
+    test('def {arglist} {a b x y}', None)
+    test('arglist', [10, 20, 100, 200])
+    # test('def arglist 1 2 3 4', None)
+    # test('arglist', [1, 2, 3, 4])
+    # test('list arglist', [1, 2, 3, 4])
     return "unit tests passed"
 
 

@@ -119,3 +119,14 @@
 
 **Link to work:** 
 [buildyourownlisp) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
+
+
+### Day 11: May 29, 2019
+##### To Learn Python 3 By Coding Practice
+
+**Today's Progress**: Write a python code to immitate what in the http://www.buildyourownlisp.com book almost finished chapter 11. 
+
+**Thoughts:** To not complete this `def` feature, I might be either misunderstood the `def` feature, or incorrectly implemented S and Q expression.  I've also read this book to chapter 12; I cannot think how to implemeent partial function feature.  I might need to read C code to see the implementation.
+
+**Link to work:** 
+[buildyourownlisp) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
