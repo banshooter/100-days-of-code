@@ -10,6 +10,8 @@ class Number:
         self.value = float(repr)
     def __str__(self):
         return 'Number('+self.repr+')'
+    def __eq__(self, another):
+        return self.__dict__ == another.__dict__
     def eval(self, env):
         return self.value
 
@@ -35,7 +37,7 @@ def evalOpt(x, env):
 
 def define(vars, value, env):
     if isinstance(vars, Symbol):
-        env[vars.repr] = list(map(lambda x: eval(x,env), value))
+        env[vars.repr] = SExpression(value)
     elif isinstance(vars, QExpression):
         for i in range(len(vars.repr)):
             env[vars.repr[i].repr] = eval(value[i],env)
@@ -44,6 +46,13 @@ def eval(x, env):
     if isinstance(x, list):
         if x[0].repr == 'def':
             return define(x[1], x[2:], env)
+        if len(x) == 2 and x[0].repr == 'list' and isinstance(x[1], Symbol):
+            "This is hack for test case 'list arglist'"
+            evaledX = list(map(lambda elem: eval(elem,env), x))
+            if isinstance(evaledX[1], SExpression):
+                sEvaledExpr = list(map(lambda elem: eval(elem,env), evaledX[1].repr))
+                evaledX = [evaledX[0]] + sEvaledExpr
+            return evalOpt(evaledX, env)
         else:
             evaledX = list(map(lambda elem: eval(elem,env), x))
             return evalOpt(evaledX, env)
@@ -98,7 +107,15 @@ class Expression:
             return None
         return eval(self.repr, env)
 
-class QExpression:    
+class SExpression:
+    def __init__(self, repr):
+        self.repr = repr
+    def __str__(self):
+        return ' '.join(str(self.repr))
+    def __eq__(self, another):
+        return self.__dict__ == another.__dict__
+
+class QExpression:
     def __init__(self, repr):
         self.repr = repr
     def __str__(self):
@@ -284,9 +301,9 @@ def unit_tests():
     test('+ a b', 30)
     test('def {arglist} {a b x y}', None)
     test('arglist', [10, 20, 100, 200])
-    # test('def arglist 1 2 3 4', None)
-    # test('arglist', [1, 2, 3, 4])
-    # test('list arglist', [1, 2, 3, 4])
+    test('def arglist 1 2 3 4', None)
+    test('arglist', QExpression([Number('1'), Number('2'), Number('3'), Number('4')]))
+    test('list arglist', [1, 2, 3, 4])
     return "unit tests passed"
 
 
