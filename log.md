@@ -130,3 +130,25 @@
 
 **Link to work:** 
 [buildyourownlisp) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
+
+
+### Day 12: May 30, 2019
+##### To Learn Python 3 By Coding Practice
+
+**Today's Progress**: Write a python code to immitate what in the http://www.buildyourownlisp.com book -- start chapter 12; in thinking and experiment process on how to implement lambda.
+
+**Thoughts:** Today my brain was just like 10% of my usual.
+
+**Link to work:** 
+[buildyourownlisp) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
+
+
+### Day 13: May 31, 2019
+##### To Learn Python 3 By Coding Practice
+
+**Today's Progress**: Write a python code to immitate what in the http://www.buildyourownlisp.com book.  Finish chapter 12.
+
+**Thoughts:** Making lambda is easier than I thought, so my brain was kinda malfunction yesterday.  I have a problem on check equals of a Function class but could not figure it out why(TBD).
+
+**Link to work:** 
+[buildyourownlisp) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)

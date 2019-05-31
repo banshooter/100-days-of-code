@@ -4,6 +4,7 @@ import operator
 import functools
 from inspect import signature
 
+
 class Number:
     def __init__(self, repr):
         self.repr = repr
@@ -15,8 +16,9 @@ class Number:
     def eval(self, env):
         return self.value
 
+
 def evalOpt(x, env):
-    if isinstance(x, list):
+    def evalList():
         if callable(x[0]):
             paramLen = len(signature(x[0]).parameters)
             if paramLen == 0:
@@ -28,24 +30,79 @@ def evalOpt(x, env):
                     return x[0](x[1:])
             else:
                 return evalOpt(x[1], env)
+        elif isinstance(x[0], Function):
+            return x[0].eval(x[1:])
         else:
             return x[0]
+
+    if isinstance(x, list):
+        return evalList()
     elif callable(x):
         return x()
     else:
         return x
 
+
+class Environment:
+    def __init__(self, parent=None):
+        self.current = {}
+        self.parent = parent
+    def has(self, x):
+        if self.parent:
+            return x in self.current or self.parent.has(x)
+        else:
+            return x in self.current
+    def get(self, x, default=None):
+        if x in self.current:
+            return self.current.get(x, default)
+        elif self.parent.has(x):
+            return self.parent.get(x, default)
+        else:
+            return default
+
 def define(vars, value, env):
     if isinstance(vars, Symbol):
-        env[vars.repr] = SExpression(value)
+        env.current[vars.repr] = SExpression(value)
     elif isinstance(vars, QExpression):
         for i in range(len(vars.repr)):
-            env[vars.repr[i].repr] = eval(value[i],env)
+            env.current[vars.repr[i].repr] = eval(value[i],env)
+
+
+class Function:
+    def __init__(self, arguments, body, env):
+        self.arguments = arguments
+        self.body = body
+        self.fenv = Environment(env)
+    def __str__(self):
+        return 'lambda ' + \
+                str(self.arguments) + \
+                ' : ' + str(self.body)
+#TODO: To check equality here; got problems last times belowed
+#AttributeError list object has no attribute __dict__
+    def eval(self, params):
+        arguments = []
+        for index in range(len(self.arguments.repr)):
+            key = self.arguments.repr[index].repr
+            if index < len(params):
+                self.fenv.current[key] = params[index]
+            else:
+                arguments.append(self.arguments.repr[index])
+        if len(arguments) == 0:
+            return eval([Symbol('eval'),self.body], self.fenv)
+        else:
+            return Function(QExpression(arguments), self.body, self.fenv)
+
+
+def func(arguments, body, env):
+    return Function(arguments, body, env)
 
 def eval(x, env):
     if isinstance(x, list):
         if x[0].repr == 'def':
             return define(x[1], x[2:], env)
+        if x[0].repr == '\\':
+            return func(x[1], x[2], env)
+
         if len(x) == 2 and x[0].repr == 'list' and isinstance(x[1], Symbol):
             "This is hack for test case 'list arglist'"
             evaledX = list(map(lambda elem: eval(elem,env), x))
@@ -67,6 +124,7 @@ def eval(x, env):
     else:
         return x
 
+
 BuiltinOpts = {
     '+': lambda x: functools.reduce(lambda a,b: a+b, x),
     '-': lambda x: functools.reduce(lambda a,b: a-b, x),
@@ -80,8 +138,11 @@ BuiltinOpts = {
     'init': lambda x: x[0][0:-1],
     'len': lambda x: len(x[0]),
     'cons': lambda x: functools.reduce(lambda a,b: a+b, x[::-1]),
-    'exit': lambda: exit()
+    'exit': lambda: exit(),
+    '\\': func
 }
+
+
 class Symbol:
     def __init__(self, repr):
         self.repr = repr
@@ -94,10 +155,11 @@ class Symbol:
             return evalOpt
         if self.repr in BuiltinOpts:
             return BuiltinOpts[self.repr]
-        elif self.repr in env:
-            return env[self.repr]
+        elif env.has(self.repr):
+            return env.get(self.repr)
         else:
             raise Exception('Error: unbound symbol!')
+
 
 class Expression:    
     def __init__(self, repr):
@@ -107,6 +169,7 @@ class Expression:
             return None
         return eval(self.repr, env)
 
+
 class SExpression:
     def __init__(self, repr):
         self.repr = repr
@@ -114,6 +177,7 @@ class SExpression:
         return ' '.join(str(self.repr))
     def __eq__(self, another):
         return self.__dict__ == another.__dict__
+
 
 class QExpression:
     def __init__(self, repr):
@@ -127,6 +191,7 @@ class QExpression:
         return self.__dict__ == another.__dict__
     def eval(self, env):
         return list(map(lambda x: x.eval(env), self.repr))
+
 
 WhiteSpace = {' ', '\t'}
 def skipWS(s, cursor):
@@ -246,29 +311,28 @@ def lisp(s):
     return exprs
 
 
-commandMap = {
-    'quit': lambda:exit()
-}
 def execute(cmd, env):
     if len(cmd) == 0:
         return None
-    try:
-        result = eval(lisp(cmd), env)
-        if result:
-            return result
-    except Exception as err:
-        return err
+    # try:
+    result = eval(lisp(cmd), env)
+    if result:
+        return result
+    # except Exception as err:
+        # return err
     return None
 
+
 def repl():
-    env = {}
+    env = Environment()
     while True:
         result = execute(input("lisp>").rstrip(), env)
         if result:
             print(result)
 
+
 def unit_tests():
-    env = {}
+    env = Environment()
     def test(s, expected):
         result = eval(lisp(s), env)
         if result != expected:
@@ -304,8 +368,14 @@ def unit_tests():
     test('def arglist 1 2 3 4', None)
     test('arglist', QExpression([Number('1'), Number('2'), Number('3'), Number('4')]))
     test('list arglist', [1, 2, 3, 4])
+#Function([Symbol('xy'), Symbol('yz')],[Symbol('+'), Symbol('xy'), Symbol('yz')]))
+    test('def { plus } (\\ {xy yz} {+ xy yz})', None)
+    test('plus 10 20', 30.0)
+    test('def { addMul } (\\ {x y} {+ x (* x y)})', None)
+    test('addMul 10 20', 210.0)
+    test('def { addMulTen } (addMul 10)', None)
+    test('addMulTen 50', 510)
     return "unit tests passed"
-
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
