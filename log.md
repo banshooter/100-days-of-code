@@ -146,9 +146,31 @@
 ### Day 13: May 31, 2019
 ##### To Learn Python 3 By Coding Practice
 
-**Today's Progress**: Write a python code to immitate what in the http://www.buildyourownlisp.com book.  Finish chapter 12.
+**Today's Progress**: Write a python code to immitate what in the http://www.buildyourownlisp.com book.  Finish half of chapter 12.
 
 **Thoughts:** Making lambda is easier than I thought, so my brain was kinda malfunction yesterday.  I have a problem on check equals of a Function class but could not figure it out why(TBD).
+
+**Link to work:** 
+[buildyourownlisp) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
+
+
+### Day 14: Jun 1, 2019
+##### To Learn Python 3 By Coding Practice
+
+**Today's Progress**: Write a python code to immitate what in the http://www.buildyourownlisp.com book.  Refactor code and try to apply lazy evaluation on Q-Expression for the second half part of chapter 12(TBD).
+
+**Thoughts:** Spending around an hour on weekend is tough.
+
+**Link to work:** 
+[buildyourownlisp) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
+
+
+### Day 15: Jun 2, 2019
+##### To Learn Python 3 By Coding Practice
+
+**Today's Progress**: Write a python code to immitate what in the http://www.buildyourownlisp.com book.  Make q-expression to be lazy evaluated only the last section(Currying) of chapter 12 left.(TBD).
+
+**Thoughts:** I need to pay debt of implement q-expression incorrectly and unit tests help me a lot of to change q-expression to be lazy evaluated.
 
 **Link to work:** 
 [buildyourownlisp) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
