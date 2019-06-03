@@ -174,3 +174,16 @@
 
 **Link to work:** 
 [buildyourownlisp) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
+
+
+### Day 16: Jun 3, 2019
+##### To Learn Python 3 By Coding Practice
+
+**Today's Progress**: Write a python code to immitate what in the http://www.buildyourownlisp.com book.  Finish chapter 12.(TBD).
+
+**Thoughts:** I start to think if language is too dynamic, it would be really hard to read code.
+
+**Link to work:** 
+[buildyourownlisp) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
+
+

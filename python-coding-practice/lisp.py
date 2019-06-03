@@ -39,7 +39,6 @@ def evalOpt(x, env):
             return x[0].eval(x[1:])
         else:
             return x[0]
-
     if isinstance(x, list):
         return evalList()
     elif callable(x):
@@ -75,15 +74,14 @@ class Environment:
 
 def define(vars, value, env):
     "I need to disable scope here because of"
-    "feature for support the function creating another function"
+    "feature for supporting the function that creates a function"
     if env.parent:
         define(vars, value, env.parent)
-    if isinstance(vars, Symbol):
-        env.current[vars.repr] = SExpression(value)
-    elif isinstance(vars, QExpression):
+    if isinstance(vars, QExpression):
         for i in range(len(vars.repr)):
             env.current[vars.repr[i].repr] = eval(value[i],env)
-
+    else:
+        raise Exception('def syntax error')
 
 class Function:
     def __init__(self, arguments, body, env):
@@ -98,12 +96,21 @@ class Function:
         return self.__dict__ == another.__dict__
     def eval(self, params):
         arguments = []
-        for index in range(len(self.arguments.repr)):
-            key = self.arguments.repr[index].repr
-            if index < len(params):
+        if '&' in self.arguments.repr:
+            index = 0
+            while self.arguments.repr[index] != '&':
+                key = self.arguments.repr[index].repr
                 self.fenv.current[key] = params[index]
-            else:
-                arguments.append(self.arguments.repr[index])
+                index = index + 1
+            key = self.arguments.repr[index+1].repr
+            self.fenv.current[key] = params[index:]
+        else:
+            for index in range(len(self.arguments.repr)):
+                key = self.arguments.repr[index].repr
+                if index < len(params):
+                    self.fenv.current[key] = params[index]
+                else:
+                    arguments.append(self.arguments.repr[index])
         if len(arguments) == 0:
             return eval([Symbol('eval'),self.body], self.fenv)
         else:
@@ -112,6 +119,7 @@ class Function:
 
 def func(arguments, body, env):
     return Function(arguments, body[0], env)
+
 
 def eval(x, env):
     if isinstance(x, list):
@@ -174,8 +182,9 @@ BuiltinOpts = {
     'len': lenFunc,
     'cons': consFunc,
     'list': listFunc,
+    '\\': func,
     'exit': lambda: exit(),
-    '\\': func
+    '&': '&'
 }
 
 
@@ -214,15 +223,6 @@ class Expression:
         return eval(self.repr, env)
 
 
-class SExpression:
-    def __init__(self, repr):
-        self.repr = repr
-    def __str__(self):
-        return ' '.join(map(lambda x: str(x), self.repr))
-    def __eq__(self, another):
-        return self.__dict__ == another.__dict__
-
-
 class QExpression:
     def __init__(self, repr):
         self.repr = repr
@@ -234,7 +234,12 @@ class QExpression:
     def __eq__(self, another):
         return self.__dict__ == another.__dict__
     def eval(self, env):
-        return list(map(lambda x: x.eval(env), self.repr))
+        def eval(x):
+            try:
+                return x.eval(env)
+            except Exception as err:
+                return x
+        return list(map(lambda x: eval(x), self.repr))
 
 
 WhiteSpace = {' ', '\t'}
@@ -382,7 +387,7 @@ def unit_tests():
         try:
             if result != expected:
                 print("actual ", result)
-        except err:
+        except Exception as err:
             print(err)
             print("actual ", result)
         assert expected == result
@@ -423,6 +428,18 @@ def unit_tests():
     test('def {fun} (\\ {args body} {def (head args) (\\ (tail args) body)})', None)
     test('fun {add x y} {+ x y}', None)
     test('add 1 2', 3.0)
+    test('fun {unpack f xs} {eval (join (list f) xs)}', None)
+    test('fun {pack f & xs} {f xs}', None)
+    test('def {uncurry} pack', None)
+    test('def {curry} unpack', None)
+    test('unpack + {5 6 7}', 18.0)
+    test('curry + {5 6 7}', 18.0)
+    test('pack head 5 6 7', QExpression([5]))
+    test('uncurry head 5 6 7', QExpression([5]))
+    test('def {addUncurried} +', None)
+    test('def {addCurried} (curry +)', None)
+    test('addCurried {5 6 7}', 18.0)
+    test('addUncurried 5 6 7', 18.0)
     return "unit tests passed"
 
 if __name__ == "__main__":
