@@ -21,6 +21,8 @@ class Number:
 
 def evalOpt(x, env):
     def evalList():
+        if len(x) == 0:
+            return None
         if callable(x[0]):
             paramLen = len(signature(x[0]).parameters)
             if paramLen == 0:
@@ -32,8 +34,10 @@ def evalOpt(x, env):
                     return x[0](x[1:])
             elif paramLen == 2:
                 return x[0](x[1].eval(env), env)
-            else:
+            elif paramLen == 3:
                 return x[0](x[1], x[2:], env)
+            else:
+                return x[0](x[1], x[2], x[3], env)
 
         elif isinstance(x[0], Function):
             return x[0].eval(x[1:])
@@ -120,6 +124,18 @@ class Function:
 def func(arguments, body, env):
     return Function(arguments, body[0], env)
 
+def ifFunc(condition, trueCause, falseCause, env):
+    if condition:
+        if isinstance(trueCause, list):
+            return trueCause[0]
+        else:
+            return eval([Symbol('eval'), trueCause], env)
+    else:
+        if isinstance(falseCause, list):
+            return falseCause[0]
+        else:
+            return eval([Symbol('eval'), falseCause], env)
+
 
 def eval(x, env):
     if isinstance(x, list):
@@ -169,12 +185,19 @@ def consFunc(x):
 def listFunc(x):
     return QExpression(x)
 
+
 BuiltinOpts = {
     '+': lambda x: functools.reduce(lambda a,b: a+b, x),
     '-': lambda x: functools.reduce(lambda a,b: a-b, x),
     '*': lambda x: functools.reduce(lambda a,b: a*b, x),
     '/': lambda x: functools.reduce(lambda a,b: a/b, x),
     '%': lambda x: functools.reduce(lambda a,b: a%b, x),
+    '>=': lambda x: type(x[0]) == type(x[1]) and x[0] >= x[1],
+    '>': lambda x: type(x[0]) == type(x[1]) and x[0] > x[1],
+    '<=': lambda x: type(x[0]) == type(x[1]) and x[0] <= x[1],
+    '<': lambda x: type(x[0]) == type(x[1]) and x[0] < x[1],
+    '==': lambda x: type(x[0]) == type(x[1]) and x[0] == x[1],
+    '!=': lambda x: type(x[0]) != type(x[1]) or x[0] != x[1],
     'head': headFunc,
     'tail': tailFunc,
     'join': joinFunc,
@@ -204,6 +227,8 @@ class Symbol:
             return define
         if self.repr == '\\':
             return func
+        if self.repr == 'if':
+            return ifFunc
         if self.repr in BuiltinOpts:
             return BuiltinOpts[self.repr]
         elif env.has(self.repr):
@@ -234,6 +259,8 @@ class QExpression:
     def __eq__(self, another):
         return self.__dict__ == another.__dict__
     def eval(self, env):
+# TODO: if remove this it will be stack overflow        
+        str(self)
         def eval(x):
             try:
                 return x.eval(env)
@@ -261,8 +288,11 @@ def isAlphaNumeric(c):
 
 def symbol(s, cursor):
     cursor = skipWS(s, cursor)
-    if cursor < len(s) and s[cursor] in BuiltinOpts:
-        return (Symbol(s[cursor]), cursor+1)
+    matchLen = 4
+    while matchLen > 0:
+        if cursor+matchLen <= len(s) and s[cursor:cursor+matchLen] in BuiltinOpts:
+            return (Symbol(s[cursor:cursor+matchLen]), cursor+matchLen)
+        matchLen = matchLen - 1
     if isAlphabet(s[cursor]):
         start = cursor
         while cursor < len(s) and isAlphaNumeric(s[cursor]):
@@ -302,14 +332,21 @@ def expressionWithParan(s, cursor, constructor, openParen, closeParen):
     cursor = skipWS(s, cursor)
     if s[cursor] == openParen:
         exprs = []
-        (expr, cursor) = expression(s, cursor+1)
-        if expr:
-            exprs.append(expr)
-        cursor = skipWS(s, cursor)
-        while cursor < len(s) and s[cursor] != closeParen:
-            (expr, cursor) = expression(s, cursor)
+        result = expression(s, cursor+1)
+        if result:
+            (expr, cursor) = result
             exprs.append(expr)
             cursor = skipWS(s, cursor)
+            while cursor < len(s) and s[cursor] != closeParen:
+                result = expression(s, cursor)
+                if result:
+                    (expr, cursor) = result
+                    exprs.append(expr)
+                    cursor = skipWS(s, cursor)
+                else:
+                    break
+        else:
+            cursor = cursor+1
         if cursor >= len(s) or s[cursor] != closeParen:
             raise Exception('expect '+closeParen+' at', cursor)
         else:
@@ -339,8 +376,6 @@ def expression(s, cursor=0):
     (expr, cursor) = symbol(s, cursor)
     if expr:
         return (expr, skipWS(s, cursor))
-    if cursor < len(s):
-        raise Exception('invalid expression at', cursor)
     return None
 
 def lisp(s):
@@ -440,6 +475,22 @@ def unit_tests():
     test('def {addCurried} (curry +)', None)
     test('addCurried {5 6 7}', 18.0)
     test('addUncurried 5 6 7', 18.0)
+    test('> 10 5', 1)
+    test('<= 88 5', 0)
+    test('== 5 6', 0)
+    test('== 5 {}', 0)
+    test('== {} {}', 1)
+    test('== 1 1', 1)
+    test('!= {} 56', 1)
+    test('== {1 2 3 {5 6}} {1   2  3   {5 6}}', 1)
+    test('def {x y} 100 200', None)
+    test('{{{1}}}', QExpression([QExpression([QExpression([1])])]))
+    test('if (== x y) {+ x y} {- x y}', -100)
+    test('(fun {len l} { if (== l {}) {0} {+ 1 (len (tail l))} })', None)
+    test('len {1 2 3.5 }', 3)
+    test('(fun {reverse l} { if (== l {}) {{}} {join (reverse (tail l)) (head l)} })', None)
+    # TODO: to make this unit test works
+    # test('reverse {1 2}', QExpression([2]))
     return "unit tests passed"
 
 if __name__ == "__main__":

@@ -187,3 +187,14 @@
 [buildyourownlisp) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
 
 
+### Day 17: Jun 4, 2019
+##### To Learn Python 3 By Coding Practice
+
+**Today's Progress**: Write a python code to immitate what in the http://www.buildyourownlisp.com book.  There is only the last unit test that doesn't work on chapter 13.
+
+**Thoughts:** It's really not easy to debug python and I got a really weird bug.
+
+**Link to work:** 
+[buildyourownlisp) (https://github.com/banshooter/100-days-of-code/tree/master/python-coding-practice/lisp.py)
+
+
